@@ -89,17 +89,14 @@
     xhttp.send();
   }
 
-  const submitted = function (event) {
-    event.preventDefault()
-    let searchVal = $('#search').val().replace(' ', '%20')
-    loadDoc(searchVal, getMovieInfo);
-    renderMovies()
-  }
 
   $(':submit').click(function (event) {
     event.preventDefault()
-    let searchVal = $('#search').val().replace(' ', '%20')
-    loadDoc(searchVal, getMovieInfo);
+    let searchVal = $('#search').val()
+    if (searchVal !== '' && searchVal !== ' ') {
+      searchVal = $('#search').val().replace(' ', '%20')
+      loadDoc(searchVal, getMovieInfo)
+    }
     renderMovies()
   })
 }());
