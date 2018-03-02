@@ -1,9 +1,7 @@
-(function() {
-  'use strict';
-
+(function () {
   const movies = [];
 
-  const renderMovies = function() {
+  const renderMovies = function () {
     $('#listings').empty();
 
     for (const movie of movies) {
@@ -17,7 +15,9 @@
         'data-tooltip': movie.title
       });
 
-      $title.tooltip({ delay: 50 }).text(movie.title);
+      $title.tooltip({
+        delay: 50
+      }).text(movie.title);
 
       const $poster = $('<img>').addClass('poster');
 
@@ -57,4 +57,49 @@
   };
 
   // ADD YOUR CODE HERE
-})();
+
+  const toMovie = function (movie) {
+    let result = {}
+    result.title = movie.Title
+    result.id = movie.imdbID
+    result.year = movie.Year
+    result.poster = movie.Poster
+    return result
+  }
+
+  const getMovieInfo = function (xhttp) {
+    movies.length = 0
+    allMovies = JSON.parse(xhttp.responseText).Search
+    // console.log(allMovies)
+    for (let i = 0; i < allMovies.length; i++) {
+      movies.push(toMovie(allMovies[i]))
+    }
+    renderMovies()
+  }
+
+  function loadDoc(searchTerm, cFunction) {
+    let xhttp;
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState === 4 && this.status === 200) {
+        cFunction(this);
+      }
+    };
+    xhttp.open('GET', `https://omdb-api.now.sh/?s=${searchTerm}`, true);
+    xhttp.send();
+  }
+
+  const submitted = function (event) {
+    event.preventDefault()
+    let searchVal = $('#search').val().replace(' ', '%20')
+    loadDoc(searchVal, getMovieInfo);
+    renderMovies()
+  }
+
+  $(':submit').click(function (event) {
+    event.preventDefault()
+    let searchVal = $('#search').val().replace(' ', '%20')
+    loadDoc(searchVal, getMovieInfo);
+    renderMovies()
+  })
+}());
